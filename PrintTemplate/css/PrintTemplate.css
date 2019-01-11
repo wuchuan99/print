@@ -1,0 +1,294 @@
+@charset "UTF-8";
+body {
+  padding-bottom: 100px;
+  background-color: #f2f2f2;
+  color: #4a4a4a;
+  font-family: Microsoft YaHei;
+  font-size: 14px;
+}
+
+#app {
+  padding: 10px 0 10px 10px;
+  padding-bottom: 0;
+}
+
+#app #header {
+  height: 52px;
+  margin-bottom: 2px;
+  min-width: 1150px;
+}
+
+#app #header .article-header {
+  width: 100%;
+  height: 52px;
+  padding: 3px 12px 3px 20px;
+  zoom: 1;
+  background: #FFF;
+}
+
+#app #header .article-header .center-block {
+  padding: 0;
+  overflow: hidden;
+  min-width: 1150px;
+}
+
+#app #header .article-header .center-block h1 {
+  float: left;
+  margin-bottom: 0;
+  margin-top: 0;
+  color: rgba(0, 0, 0, 0.65);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 45px;
+}
+
+#app .mt20 {
+  margin-top: 20px;
+  background-color: #fff;
+  min-width: 1150px;
+}
+
+#app .mt20 .panel-heading {
+  margin-top: -1px;
+  margin-right: -1px;
+}
+
+#app .mt20 .panel-heading.head {
+  padding: 0;
+  overflow: hidden;
+  zoom: 1;
+  border-radius: 0;
+}
+
+#app .mt20 .panel-heading h3 {
+  border-bottom: 1px solid #dfdfdf;
+  line-height: 58px;
+}
+
+#app .mt20 .panel-heading h3.ys {
+  border-bottom: 0;
+}
+
+#app .mt20 .panel-heading h3 em {
+  font-style: normal;
+  font-size: 22px;
+  color: #555555;
+}
+
+#app .mt20 .templateName {
+  padding-bottom: 0;
+}
+
+.component-box {
+  border: 4px dotted dodgerblue;
+  padding: 10px 20px;
+  width: 392px;
+  margin: 0 20px;
+  float: left;
+}
+
+.component-box .panel-module {
+  margin: 10px 0;
+  border: 2px solid gray;
+}
+
+.component-box .panel-module .panel-module-title {
+  padding: 0 10px;
+  border-bottom: 2px solid gray;
+}
+
+.component-box .panel-module .panel-module-body {
+  padding: 10px 0 0 10px;
+  overflow: hidden;
+  /*启用状态*/
+}
+
+.component-box .panel-module .panel-module-body .panel-component {
+  margin: 0 10px 10px 0;
+  background-color: gray;
+  float: left;
+  border: 1px solid white;
+  width: 100px;
+  height: 45px;
+  cursor: pointer;
+}
+
+.component-box .panel-module .panel-module-body .panel-component table {
+  vertical-align: middle;
+  height: 100%;
+  width: 100%;
+}
+
+.component-box .panel-module .panel-module-body .panel-component table tbody {
+  display: table-row-group;
+  vertical-align: middle;
+  border-color: inherit;
+}
+
+.component-box .panel-module .panel-module-body .panel-component table tbody tr {
+  display: table-row;
+  vertical-align: inherit;
+  border-color: inherit;
+}
+
+.component-box .panel-module .panel-module-body .panel-component table tbody tr td {
+  color: white;
+  font-size: 14px;
+  text-align: center;
+  display: table-cell;
+  vertical-align: inherit;
+}
+
+.component-box .panel-module .panel-module-body .panel-component:hover {
+  border: 1px solid gray;
+}
+
+.component-box .panel-module .panel-module-body .switch-on {
+  background-color: #2D93CA;
+  color: #000;
+}
+
+.template-container {
+  border: 4px dotted dodgerblue;
+  padding: 10px;
+  width: 360px;
+  float: left;
+  margin: 0 20px;
+  background-color: #e4e4e4;
+}
+
+.template-container .template-module-list {
+  background-color: white;
+  margin: 0 20px;
+  padding: 20px 15px;
+}
+
+.template-container .template-module-list .template-module {
+  /*模块分隔线*/
+}
+
+.template-container .template-module-list .template-module .template-row {
+  /*获取焦点*/
+  /*店铺logo*/
+}
+
+.template-container .template-module-list .template-module .template-row .line {
+  border-bottom: 1px solid #ddd;
+  height: 12px;
+  margin-bottom: 12px;
+  width: 100%;
+  clear: both;
+}
+
+.template-container .template-module-list .template-module .template-row .template-component {
+  width: 100%;
+  float: left;
+  box-sizing: border-box;
+  border: 1px solid white;
+}
+
+.template-container .template-module-list .template-module .template-row .template-component.logo-type {
+  padding: 10px 0;
+}
+
+.template-container .template-module-list .template-module .template-row .template-component .signatureArea {
+  display: block;
+  height: 100px;
+}
+
+.template-container .template-module-list .template-module .template-row .template-component .logo {
+  background: #ddd;
+  border: 1px solid;
+  height: 50px;
+  line-height: 50px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.template-container .template-module-list .template-module .template-row .template-component .node {
+  width: 150px;
+  height: 56px;
+  border: 1px solid;
+  margin: 0 auto;
+}
+
+.template-container .template-module-list .template-module .template-row .template-component .midline-container {
+  margin: 10px 0;
+}
+
+.template-container .template-module-list .template-module .template-row .template-component .midline-container .midline {
+  display: flex;
+  align-items: center;
+}
+
+.template-container .template-module-list .template-module .template-row .template-component .midline-container .midline span {
+  display: inline-block;
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+  height: 2px;
+  margin: 0;
+}
+
+.template-container .template-module-list .template-module .template-row .template-component:hover {
+  border: 1px solid orange;
+  background-color: rgba(247, 248, 74, 0.67);
+  cursor: pointer;
+}
+
+.template-container .template-module-list .template-module .template-row .template-component-focus {
+  border: 1px solid orange;
+  background-color: rgba(247, 248, 74, 0.67);
+}
+
+.template-container .template-module-list .template-module .template-row .template-component-individuation {
+  width: 100%;
+}
+
+.template-container .template-module-list .template-module .template-row .template-component-individuation .template-component-table {
+  width: 100%;
+}
+
+.template-container .template-module-list .template-module .template-row .template-component-individuation .template-component-table .template-component-thead .template-component-tr,
+.template-container .template-module-list .template-module .template-row .template-component-individuation .template-component-table .template-component-tbody .template-component-tr {
+  overflow: hidden;
+  width: 100%;
+}
+
+.template-container .template-module-list .template-module .template-row .shop-logo {
+  width: 100%;
+  color: #3194ff;
+  padding: 10px;
+  margin: 10px 0;
+  text-align: center;
+  box-sizing: border-box;
+  border: 1px solid black;
+  background-color: #e6e6e6;
+}
+
+.template-container .template-module-list .template-module .the-divider {
+  margin: 5px 0;
+}
+
+.template-property-panel {
+  position: fixed;
+  bottom: 80px;
+  width: 264px;
+  right: 50px;
+}
+
+.template-property-panel .form-control {
+  width: 156px;
+}
+
+.template-property-panel .rule {
+  padding: 0 15px;
+  padding-bottom: 15px;
+}
+
+.clearfix:after {
+  display: block;
+  clear: both;
+  content: "";
+  visibility: hidden;
+  height: 0;
+}

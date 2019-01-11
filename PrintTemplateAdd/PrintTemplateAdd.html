@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./bootstrap-3.3.7-dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="./assets/layer/theme/default/layer.css">
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/PrintTemplateAdd.css" />
+    <script src="./js/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div id="header">
+            <div class="article-header">
+                <div class="center-block container">
+                    <h1>
+                        <span>品牌票据样式管理</span>
+                    </h1>
+                </div>
+            </div>
+        </div>
+        <div class="container panel-group mt20">
+            <div class="row">
+                <div class="panel-heading head">
+                    <h3 class="panel-title">
+                        <em>票据类型</em>
+                    </h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="tab">
+                        <li :class="{active: num == index}" v-for="(item, index) in info" :key="index" @click="getModel(index, item.id)">{{item.name}}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="panel-heading">
+                    <h3 class="panel-title ys">
+                        <em>所有模板</em>
+                        <button type="button" class="btn pull-right" v-show="showAdd" @click="showAdd = !showAdd; showQx = !showQx; modelItemStatus = !modelItemStatus">
+                            添加模板 <i class="glyphicon glyphicon-plus"></i>
+                        </button>
+                        <button type="button" class="btn pull-right" v-show="showQx" @click="showQx = !showQx; showAdd = !showAdd; modelItemStatus = !modelItemStatus">
+                            取消添加 <i class="glyphicon glyphicon-minus"></i>
+                        </button>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                   <div id="modelList">
+                       <div class="model-item" v-for="(item, index) in res">
+                            <div class="model-item-status" v-show="modelItemStatus">
+                                <a :href="'../PrintTemplate/PrintTemplate.html?documentType='+item.documentType+'&templateId='+item.id+'&type=add'" class="btn">基于此模板新建</a>
+                            </div>
+                            <div class="model-content"  @mouseenter="eq = index" @mouseleave="eq = ''">
+                                    <p class="model-operate" v-show="index === eq">
+                                        <a class="btn-used-batch" v-if="item.defaultTemplet != 1" @click="applyShop(item.id)">批量应用于门店</a>
+                                        <a class="btn-preview" title="预览" data-toggle="modal" data-target="#myModal" @click="templateActive = item"><i class="glyphicon glyphicon-fullscreen"></i></a>
+                                        <a class="btn-edit" :href="'../PrintTemplate/PrintTemplate.html?documentType='+item.documentType+'&templateId='+item.id+'&type=edit'+'&modelName='+item.name" title="编辑" v-if="item.defaultTemplet != 1"><i class="glyphicon glyphicon-edit"></i></a>
+                                        <a class="btn-delete" title="删除" v-if="item.defaultTemplet != 1" @click="del(item.id)"><i class="glyphicon glyphicon-trash"></i></a>
+                                    </p>
+                                <div class="style-model-content">
+                                    <div class="template-container">
+                                        <div class="template-module-list">
+                                            <div class="template-module" v-for="templateModule in item.modules">
+                                                <div class="template-row clearfix" v-for="templateRow in templateModule.rows">
+                                                    <div :style="'height:' + 12 * templateRow.blankNumber + 'px'" v-if="templateRow.blankNumber != 0"></div>
+                                                    <div :class="{'template-component': templateComponent.component == null, 'template-component-individuation': templateComponent.component != null, 'logo-type': templateComponent.value == '商户logo'}"
+                                                    v-for="templateComponent in templateRow.components"
+                                                    :style="templateComponent | filterStyle" >
+                                                        <div class="node" v-if="templateModule.moduleName == '二维码'">
+
+                                                        </div>
+                                                        <div class="logo" v-if="templateComponent.value == '商户logo'">
+                                                            <a href="javascript:;" v-cloak>{{templateComponent.value}}</a>
+                                                        </div>
+                                                        <span v-if="templateComponent.value != '商户logo'" v-cloak>{{templateComponent.value}}</span>
+                                                        <div 
+                                                        class="template-component-table-title template-component" 
+                                                        v-if="templateComponent.hasOwnProperty('tableTitle')" 
+                                                        :style="templateComponent.tableTitle | filterStyle" 
+                                                        v-cloak>
+                                                            {{templateComponent.tableTitle.value}}
+                                                        </div>
+                                                        <div class="template-component-table">
+                                                            <!--thead-->
+                                                            <div class="template-component-thead" v-if="templateComponent.hasOwnProperty('thead')">
+                                                                <div class="template-component-tr">
+                                                                    <div
+                                                                    class="table-component-td template-component" 
+                                                                    v-for="tableHeadColumn in templateComponent.thead.tableRowSet.columnSet" 
+                                                                    :style="tableHeadColumn | filterStyle"
+                                                                    v-cloak>
+                                                                        {{tableHeadColumn.value}}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <!--tbody-->
+                                                            <div class="template-component-tbody" v-if="templateComponent.hasOwnProperty('tbody')">
+                                                                <div class="template-component-tr" v-if="templateComponent.hasOwnProperty('category')">
+                                                                    <div class="template-component-td template-component"
+                                                                    :style="templateComponent.category | filterStyle"
+                                                                    v-cloak>
+                                                                        <!--category-->
+                                                                        {{templateComponent.category.value}}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="template-component-tr" v-for="tableTbodyRow in templateComponent.tbody.tableRowSet">
+                                                                    <div
+                                                                    class="template-component-td template-component"
+                                                                    v-for="tableTbodyRowColumn in tableTbodyRow.columnSet" 
+                                                                    :style="tableTbodyRowColumn | filterStyle"
+                                                                    v-cloak>
+                                                                        {{tableTbodyRowColumn.value}}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>       
+                                                    </div>
+                                                    <div class="line" v-if="templateRow.showLine"></div>
+                                                </div>    
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="template-name">{{item.name}}</div>
+                       </div>
+                   </div>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">{{templateActive.name}}</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="template-container">
+                                <div class="template-module-list">
+                                    <div class="template-module" v-for="templateModule in templateActive.modules">
+                                        <div class="template-row clearfix" v-for="templateRow in templateModule.rows">
+                                            <div :style="'height:' + 12 * templateRow.blankNumber + 'px'" v-if="templateRow.blankNumber != 0"></div>
+                                            <div :class="{'template-component': templateComponent.component == null, 'template-component-individuation': templateComponent.component != null, 'logo-type': templateComponent.value == '商户logo'}"
+                                            v-for="templateComponent in templateRow.components"
+                                            :style="templateComponent | filterStyle" >
+                                                <div class="node" v-if="templateModule.moduleName == '二维码'"></div>
+                                                <div class="logo" v-if="templateComponent.value == '商户logo'">
+                                                    <a href="javascript:;" v-cloak>{{templateComponent.value}}</a>
+                                                </div>
+                                                <span v-if="templateComponent.value != '商户logo'" v-cloak>{{templateComponent.value}}</span>
+                                                <div 
+                                                class="template-component-table-title template-component" 
+                                                v-if="templateComponent.hasOwnProperty('tableTitle')" 
+                                                :style="templateComponent.tableTitle | filterStyle" 
+                                                v-cloak>
+                                                    {{templateComponent.tableTitle.value}}
+                                                </div>
+                                                <div class="template-component-table">
+                                                    <!--thead-->
+                                                    <div class="template-component-thead" v-if="templateComponent.hasOwnProperty('thead')">
+                                                        <div class="template-component-tr">
+                                                            <div
+                                                            class="table-component-td template-component" 
+                                                            v-for="tableHeadColumn in templateComponent.thead.tableRowSet.columnSet" 
+                                                            :style="tableHeadColumn | filterStyle"
+                                                            v-cloak>
+                                                                {{tableHeadColumn.value}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--tbody-->
+                                                    <div class="template-component-tbody" v-if="templateComponent.hasOwnProperty('tbody')">
+                                                        <div class="template-component-tr" v-if="templateComponent.hasOwnProperty('category')">
+                                                            <div class="template-component-td template-component"
+                                                            :style="templateComponent.category | filterStyle"
+                                                            v-cloak>
+                                                                <!--category-->
+                                                                {{templateComponent.category.value}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="template-component-tr" v-for="tableTbodyRow in templateComponent.tbody.tableRowSet">
+                                                            <div
+                                                            class="template-component-td template-component"
+                                                            v-for="tableTbodyRowColumn in tableTbodyRow.columnSet" 
+                                                            :style="tableTbodyRowColumn | filterStyle"
+                                                            v-cloak>
+                                                                {{tableTbodyRowColumn.value}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>       
+                                            </div>
+                                            <div class="line" v-if="templateRow.showLine"></div>
+                                        </div>    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="./assets/layer/layer.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                eq: '', //控制修改
+                modelItemStatus: false, //控制基于此新建模板
+                res: [], //渲染页面数据
+                showAdd: true, //控制添加
+                showQx: false, //控制取消
+                templateActive: [], //单个模板信息
+                num: 0, //控制高亮切换
+                info: [], //票据类型
+                documentType: 1 //票据类型
+            },
+            created(){
+                var params = {};
+                this.reqAjaxAsync('printerTicket/queryType', JSON.stringify(params)).done(res => {
+                    this.info = res.data; 
+                });
+
+                var params = {
+                    shopId: 288,
+                    documentType: 1
+                } 
+                this.reqAjaxAsync('printerTicket/query', JSON.stringify(params)).done(res => {
+                    console.log(res.data)
+                    this.res = res.data; 
+                });
+            },
+            methods: {
+                //数据请求
+                reqAjaxAsync(cmd, data, async) {
+                    var defer = $.Deferred();
+                    $.ajax({
+                        type: "POST",
+                        url: "/zxcity_restful/ws/rest",
+                        dataType: "json",
+                        async: async || true, //默认为异步
+                        data: {
+                            "cmd": cmd,
+                            "data": data || ""
+                        },
+                        beforeSend: function(request) {
+                            layer.load(1, {
+                                shade: [0.1, '#fff']
+                            });
+                        },
+                        success: function(data) {
+                            layer.closeAll('loading');
+                            defer.resolve(data);
+                        },
+                        error: function(err) {
+                            layer.closeAll('loading');
+                            layer.msg("系统繁忙，请稍后再试!");
+                            console.log(err.status + ":" + err.statusText);
+                        }
+                    });
+                    return defer.promise();
+                },
+                getModel(index,documentType){
+                    this.num = index;
+                    this.documentType = documentType;
+                    var params = {
+                        shopId: 288,
+                        documentType: documentType
+                    }
+                    this.reqAjaxAsync('printerTicket/query', JSON.stringify(params)).done(res => {
+                        this.res = res.data; 
+                    });
+                },
+                //删除模板
+                del(templateId) {
+                    var params = {
+                        shopId: 288,
+                        templateId: templateId
+                    }
+                    console.log(params)
+                    this.reqAjaxAsync('printerTicket/remove', JSON.stringify(params)).done(res => {
+                        console.log(res);
+                        layer.msg(res.msg);
+                        this.getModel(this.num, this.documentType);
+                    })
+                },
+                //应用于门店
+                applyShop(templateId) {
+                    var params = {
+                        shopId: 288,
+                        templateId: templateId,
+                        documentType: this.documentType
+                    }
+                    console.log(params)
+                    this.reqAjaxAsync('printerTicket/enable', JSON.stringify(params)).done(res => {
+                        console.log(res)
+                        
+                    })
+                }
+            },
+            filters: {
+                filterStyle(val){
+                    var valueStyleStr = "";
+                    if (val.valueStyle != null && val.valueStyle != "") {
+                        var valueStyle = JSON.parse(val.valueStyle);
+                        for(key in valueStyle){
+                            if (key === "fontSize") {
+                                if (valueStyle[key] == 1) {
+                                    valueStyle[key] = 12;
+                                } else if(valueStyle[key] == 2){
+                                    valueStyle[key] = 16;
+                                } else {
+                                    valueStyle[key] = 24;
+                                }
+                                valueStyle[key] = valueStyle[key] + "px";
+                            }
+                            valueStyleStr += key + ":" + valueStyle[key] + ";";
+                        }
+                    }
+                    if (val.width != null && val.width != "") {
+                        valueStyleStr += "width:" + val.width + "%;";
+                    }
+                    return valueStyleStr;
+                }
+            }
+        })
+    </script>
+</html>

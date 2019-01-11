@@ -1,0 +1,370 @@
+@charset "UTF-8";
+body {
+  padding-bottom: 100px;
+  background-color: #f2f2f2;
+  color: #4a4a4a;
+  font-family: Microsoft YaHei;
+  font-size: 14px;
+}
+
+#app {
+  padding: 10px;
+  padding-bottom: 0;
+}
+
+#app #header {
+  height: 52px;
+  margin-bottom: 2px;
+  min-width: 1150px;
+}
+
+#app #header .article-header {
+  width: 100%;
+  height: 52px;
+  padding: 3px 12px 3px 20px;
+  zoom: 1;
+  background: #FFF;
+}
+
+#app #header .article-header .center-block {
+  padding: 0;
+  overflow: hidden;
+  min-width: 1150px;
+}
+
+#app #header .article-header .center-block h1 {
+  float: left;
+  margin-bottom: 0;
+  margin-top: 0;
+  color: rgba(0, 0, 0, 0.65);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 45px;
+}
+
+#app .mt20 {
+  margin-top: 20px;
+  background-color: #fff;
+  min-width: 1150px;
+}
+
+#app .mt20 .panel-heading.head {
+  padding-top: 10px;
+  overflow: hidden;
+  zoom: 1;
+  border-radius: 0;
+}
+
+#app .mt20 .panel-heading h3 {
+  border-bottom: 1px dashed #8e8e8e;
+  line-height: 58px;
+}
+
+#app .mt20 .panel-heading h3.ys {
+  border-top: 1px solid #d8d8d8;
+}
+
+#app .mt20 .panel-heading h3.ys .btn {
+  border-radius: 4px;
+  background-color: #29dfa9;
+  width: 130px;
+  height: 36px;
+  margin-right: 20px;
+  color: #fff;
+  letter-spacing: 2px;
+  font-size: 16px;
+  margin-top: 11px;
+}
+
+#app .mt20 .panel-heading h3 em {
+  font-style: normal;
+  font-size: 18px;
+  color: #333333;
+  font-weight: 700;
+}
+
+#app .mt20 .tab {
+  margin: 20px 0;
+}
+
+#app .mt20 .tab li {
+  color: #999999;
+  font-size: 16px;
+  letter-spacing: 2px;
+  border: 1px solid #d8d8d8;
+  margin-right: 12px;
+  min-width: 130px;
+  height: 42px;
+  line-height: 42px;
+  border-radius: 21px;
+  text-align: center;
+  cursor: pointer;
+  display: inline-block;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+#app .mt20 .tab li:first-child {
+  padding-left: 0;
+}
+
+#app .mt20 .tab li.active {
+  color: #fff;
+  background-color: #53b2ea;
+  border-color: #53b2ea;
+}
+
+#app .mt20 #modelList {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+#app .mt20 #modelList .model-item {
+  margin: 0 7px 10px 7px;
+  position: relative;
+  height: 600px;
+  overflow: hidden;
+}
+
+#app .mt20 #modelList .model-item .model-item-status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.7);
+  text-align: center;
+}
+
+#app .mt20 #modelList .model-item .model-item-status a {
+  color: #fff;
+  display: inline-block;
+  text-align: center;
+  margin-top: 250px;
+  background: #53b2ea;
+  padding: 8px 30px;
+  border-radius: 4px;
+  letter-spacing: 2px;
+  text-decoration: none;
+}
+
+#app .mt20 #modelList .model-item .model-content {
+  border: 1px solid #999;
+  min-height: 450px;
+  padding-top: 20px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+#app .mt20 #modelList .model-item .model-content .model-operate {
+  position: absolute;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  line-height: 80px;
+  top: 0;
+  z-index: 99;
+  text-align: center;
+}
+
+#app .mt20 #modelList .model-item .model-content .model-operate a {
+  line-height: 80px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+  padding: 6px 10px;
+  font-size: 22px;
+  color: #fff;
+}
+
+#app .mt20 #modelList .model-item .model-content .model-operate a.btn-used-batch {
+  line-height: 28px;
+  font-size: 16px;
+  background-color: #53b2ea;
+  text-decoration: none;
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content {
+  height: 500px;
+  overflow: hidden;
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list {
+  background-color: white;
+  width: 350px;
+  padding: 10px;
+  margin: 0 auto;
+  font-size: 12px;
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list .template-module {
+  /*模块分隔线*/
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list .template-module .template-row {
+  /*店铺logo*/
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list .template-module .template-row .line {
+  border-bottom: 1px solid #ddd;
+  height: 12px;
+  margin-bottom: 12px;
+  width: 100%;
+  clear: both;
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list .template-module .template-row .template-component {
+  width: 100%;
+  float: left;
+  box-sizing: border-box;
+  border: 1px solid white;
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list .template-module .template-row .template-component.logo-type {
+  padding: 10px 0;
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list .template-module .template-row .template-component .logo {
+  background: #ddd;
+  border: 1px solid;
+  height: 50px;
+  line-height: 50px;
+  font-size: 12px;
+  text-align: center;
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list .template-module .template-row .template-component .node {
+  width: 150px;
+  height: 56px;
+  border: 1px solid;
+  margin: 0 auto;
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list .template-module .template-row .template-component-individuation {
+  width: 100%;
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list .template-module .template-row .template-component-individuation .template-component-table {
+  width: 100%;
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list .template-module .template-row .template-component-individuation .template-component-table .template-component-thead .template-component-tr,
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list .template-module .template-row .template-component-individuation .template-component-table .template-component-tbody .template-component-tr {
+  overflow: hidden;
+  width: 100%;
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list .template-module .template-row .shop-logo {
+  width: 100%;
+  color: #3194ff;
+  padding: 10px;
+  margin: 10px 0;
+  text-align: center;
+  box-sizing: border-box;
+  border: 1px solid black;
+  background-color: #e6e6e6;
+}
+
+#app .mt20 #modelList .model-item .model-content .style-model-content .template-container .template-module-list .template-module .the-divider {
+  margin: 5px 0;
+}
+
+#app .mt20 #modelList .model-item .template-name {
+  color: #000;
+  text-align: center;
+  margin-top: 10px;
+}
+
+#myModal .template-container {
+  width: 350px;
+  margin: 0 auto;
+  border: 1px solid;
+}
+
+#myModal .template-container .template-module-list {
+  background-color: white;
+  padding: 10px;
+  margin: 0 auto;
+  font-size: 12px;
+}
+
+#myModal .template-container .template-module-list .template-module {
+  /*模块分隔线*/
+}
+
+#myModal .template-container .template-module-list .template-module .template-row {
+  /*店铺logo*/
+}
+
+#myModal .template-container .template-module-list .template-module .template-row .line {
+  border-bottom: 1px solid #ddd;
+  height: 12px;
+  margin-bottom: 12px;
+  width: 100%;
+  clear: both;
+}
+
+#myModal .template-container .template-module-list .template-module .template-row .template-component {
+  width: 100%;
+  float: left;
+  box-sizing: border-box;
+  border: 1px solid white;
+}
+
+#myModal .template-container .template-module-list .template-module .template-row .template-component.logo-type {
+  padding: 10px 0;
+}
+
+#myModal .template-container .template-module-list .template-module .template-row .template-component .logo {
+  background: #ddd;
+  border: 1px solid;
+  height: 50px;
+  line-height: 50px;
+  font-size: 12px;
+  text-align: center;
+}
+
+#myModal .template-container .template-module-list .template-module .template-row .template-component .node {
+  width: 150px;
+  height: 56px;
+  border: 1px solid;
+  margin: 0 auto;
+}
+
+#myModal .template-container .template-module-list .template-module .template-row .template-component-individuation {
+  width: 100%;
+}
+
+#myModal .template-container .template-module-list .template-module .template-row .template-component-individuation .template-component-table {
+  width: 100%;
+}
+
+#myModal .template-container .template-module-list .template-module .template-row .template-component-individuation .template-component-table .template-component-thead .template-component-tr,
+#myModal .template-container .template-module-list .template-module .template-row .template-component-individuation .template-component-table .template-component-tbody .template-component-tr {
+  overflow: hidden;
+  width: 100%;
+}
+
+#myModal .template-container .template-module-list .template-module .template-row .shop-logo {
+  width: 100%;
+  color: #3194ff;
+  padding: 10px;
+  margin: 10px 0;
+  text-align: center;
+  box-sizing: border-box;
+  border: 1px solid black;
+  background-color: #e6e6e6;
+}
+
+#myModal .template-container .template-module-list .template-module .the-divider {
+  margin: 5px 0;
+}
+
+.clearfix:after {
+  display: block;
+  clear: both;
+  content: "";
+  visibility: hidden;
+  height: 0;
+}

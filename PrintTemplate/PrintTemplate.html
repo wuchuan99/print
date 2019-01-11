@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./bootstrap-3.3.7-dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="./assets/layer/theme/default/layer.css">
+    <link rel="stylesheet" href="./css/PrintTemplate.css" />
+    <style>
+        [v-cloak] {
+            display:none
+        }
+    </style>
+    <script src="./js/vue.js"></script>
+  </head>
+  <body>
+    <div id="app">
+        <div id="header">
+            <div class="article-header">
+                <div class="center-block container">
+                    <h1>
+                        <span>票据样式模板</span>
+                    </h1>
+                </div>
+            </div>
+        </div>
+        <div class="container panel-group mt20">
+            <div class="row">
+                <div class="col-lg-12 col-md-12">
+                    <div class="panel-heading head">
+                        <h3 class="panel-title">
+                            <em>基础设置</em>
+                            <strong>(票据类型:<span>结账单</span> 基于: <span>结账单默认模板</span>)</strong>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="panel-body templateName">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label>模板名称：<span style="color: red;font-size: 20px;">*</span></label>
+                            <input v-model="moduleName" type="text" maxlength="10" class="form-control" placeholder="请输入模板名称">
+                        </div>
+                        <button type="button" class="btn btn-danger" @click="buildCustomTemplate">保存</button>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12">
+                    <div class="panel-heading head">
+                        <h3 class="panel-title ys">
+                            <em>样式配置</em>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="component-box">
+                    <div class="panel-module" v-for="panelModule in panelModules">
+                        <div class="panel-module-title">
+                            <h2 v-cloak>{{panelModule.moduleName}} <small>{{panelModule.moduleDescribe}}</small></h2>
+                        </div>
+                        <div class="panel-module-body">
+                            <div v-for="panelComponent in panelModule.components" :class="{'panel-component': true, 'switch-on': componentEnableStaus[panelComponent.id]}" @click="switchComponentStatus(panelComponent.id, componentEnableStaus[panelComponent.id])">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td v-cloak>{{panelComponent.label}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="template-container">
+                    <div class="template-module-list">
+                        <div class="template-module" v-for="templateModule in templateModules">
+                            <div class="template-row clearfix" v-for="templateRow in templateModule.rows">
+                                <div :style="'height:' + 12 * templateRow.blankNumber + 'px'" v-if="templateRow.blankNumber != 0"></div>
+                                <div :class="{'template-component': templateComponent.component == null, 'template-component-individuation': templateComponent.component != null, 'logo-type': templateComponent.label == '商户logo'}"
+                                v-for="templateComponent in templateRow.components"
+                                :style="templateComponent | filterStyle" 
+                                v-show="componentEnableStaus[templateComponent.id || templateComponent.component.id]"
+                                @click="templateComponent.component == null ? doTemplateComponentActive(templateComponent) : null">
+                                    <div class="node" v-if="templateComponent.value == '文案内容'"></div>
+                                    <div class="logo" v-if="templateComponent.label == '商户logo'">
+                                        <a href="javascript:;" v-cloak>{{templateComponent.label}}</a>
+                                    </div>
+                                    <span :class="{'signatureArea': templateComponent.value == '签字区'}" v-if="templateComponent.value != '商户logo'" v-cloak>{{templateComponent.value}}</span>
+                                    <div 
+                                    class="template-component-table-title template-component" 
+                                    v-if="templateComponent.tableTitle != null" 
+                                    :style="templateComponent.tableTitle | filterStyle"
+                                    @click="doTemplateComponentActive(templateComponent.tableTitle)" 
+                                    v-cloak>
+                                        {{templateComponent.tableTitle.value}}
+                                    </div>
+                                    <div class="template-component-table">
+                                        <!--thead-->
+                                        <div class="template-component-thead" v-if="templateComponent.thead != null">
+                                            <div class="template-component-tr">
+                                                <div
+                                                class="table-component-td template-component" 
+                                                v-for="tableHeadColumn in templateComponent.thead.tableRowSet.columnSet" 
+                                                :style="tableHeadColumn | filterStyle"
+                                                @click="doTemplateComponentActive(tableHeadColumn)" 
+                                                v-cloak>
+                                                    {{tableHeadColumn.value}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--tbody-->
+                                        <div class="template-component-tbody" v-if="templateComponent.tbody != null">
+                                            <div class="template-component-tr" v-if="templateComponent.category != null">
+                                                <div class="template-component-td template-component"
+                                                :style="templateComponent.category | filterStyle"
+                                                @click="doTemplateComponentActive(templateComponent.category)" 
+                                                v-cloak>
+                                                    <!--category-->
+                                                    <div class="midline-container">
+                                                        <div class="midline">
+                                                            <span></span>
+                                                            {{templateComponent.category.value}}
+                                                            <span></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="template-component-tr" v-for="tableTbodyRow in templateComponent.tbody.tableRowSet">
+                                                <div
+                                                class="template-component-td template-component"
+                                                v-for="tableTbodyRowColumn in tableTbodyRow.columnSet" 
+                                                :style="tableTbodyRowColumn | filterStyle"
+                                                @click="doTemplateComponentActive(tableTbodyRowColumn)" 
+                                                v-cloak>
+                                                    {{tableTbodyRowColumn.value}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>       
+                                </div>
+                                <div class="line" v-if="templateRow.showLine"></div>
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="template-property-panel">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">属性</div>
+                        <div class="panel-body">
+                            <div class="form-inline">
+                                <div class="form-group">
+                                    <label>字体大小：</label>
+                                    <select class="form-control" @change="updateTemplateProperty" v-model="activeTemplateValueStyle.fontSize">
+                                        <option @selected="activeTemplateValueStyle.fontSize == '1'" value="1">高度x1宽度x1</option>
+                                        <option @selected="activeTemplateValueStyle.fontSize == '2'" value="2">高度x2宽度x2</option>
+                                        <option @selected="activeTemplateValueStyle.fontSize == '4'" value="4">高度x4宽度x4</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="margin-top: 10px;">
+                                    <label>文本对齐：</label>
+                                    <select id="text" class="form-control" @change="updateTemplateProperty" v-model="activeTemplateValueStyle.textAlign">
+                                        <option @selected="activeTemplateValueStyle.textAlign == 'left'" value="left">左对齐</option>
+                                        <option @selected="activeTemplateValueStyle.textAlign == 'center'" value="center">居中</option>
+                                        <option @selected="activeTemplateValueStyle.textAlign == 'right'" value="right">右对齐</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rule">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <button type="button" class="btn btn-primary" @click="updateRule(1)">插入空行</button>
+                                <button type="button" class="btn btn-primary" @click="updateRule(2)">移除空行</button>
+                                <button type="button" class="btn btn-primary" @click="updateRule(3)">分割线</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </body>
+<script src="./js/jquery.min.js"></script>
+<!-- <script src="./bootstrap-3.3.7-dist/js/bootstrap.min.js"></script> -->
+<script src="./assets/layer/layer.js"></script>
+  <script>
+      var vm = new Vue({
+          el: '#app',
+          data: {
+            panelModules: [], //左侧系统组件
+            templateModules: [], //右侧系统组件
+            componentEnableStaus: {}, //组件状态
+            activeComponent: {
+                valueStyle: '{}'
+            }, //焦点组件信息
+            activeTemplateValueStyle: {
+                fontSize: '',
+                textAlign: ''
+            }, //焦点组件样式
+            moduleName: '', //模板名称
+            documentType: '', //票据类型
+            templateId: '', //模板id
+            type: '',  //判断添加或修改 
+          },
+          created() {
+            this.documentType = Number(this.GetQueryString('documentType'));
+            this.templateId = Number(this.GetQueryString('templateId'));
+            this.type = this.GetQueryString('type');
+            this.moduleName = this.GetQueryString('modelName') || '';
+            var params = {
+                documentType: this.documentType,
+                templateId: this.templateId
+            }
+            //加载系统组件
+            this.reqAjaxAsync('printerTicket/getSystemComponents', JSON.stringify(params)).done(res => {
+                console.log(res)
+                if(res.code == 1) {
+                    modules = res.data.modules;
+                    for (var i = 0; i < modules.length; i++) {
+                        var module = modules[i];
+                        var panelComponents = [];
+                        var rows = [];
+                        for(var j = 0; j < module.components.length; j++){
+                            var component = module.components[j];
+                            //左侧组件
+                            if(component.hasOwnProperty("component")){
+                                panelComponents.push(component.component);
+                                this.$set(this.componentEnableStaus, component.component.id, false)
+                            } else {
+                                panelComponents.push(component);
+                                this.$set(this.componentEnableStaus, component.id, false)
+                            }
+
+                            //右侧组件
+                            if (!component.hasOwnProperty("component")) {
+                                if (rows.length > 0) {
+                                    var rowNum = component.row;
+                                    var recentRowColumn = rows[rows.length - 1].components[0];
+                                    if (rowNum === recentRowColumn.row) {
+                                        rows[rows.length - 1].components.push(component);
+                                        continue;
+                                    }
+                                }
+                            }
+                            var components = [];
+                            components.push(component);
+                            var row = {};
+                            row.components = components;
+                            if (component.hasOwnProperty("component")) {
+                                row.sort = component.component.sort;
+                                row.type = component.component.type;
+                            } else {
+                                row.sort = component.sort;
+                                row.type = component.type;
+                            }
+                            rows.push(row);
+                        }
+                        //左侧
+                        var panelModule = {};
+                        panelModule.moduleId = module.moduleId;
+                        panelModule.moduleName = module.moduleName;
+                        panelModule.moduleDescribe = module.moduleDescribe;
+                        panelModule.sort = module.sort;
+                        panelModule.components = panelComponents;
+                        this.panelModules.push(panelModule);
+
+                        //右侧
+                        var templateModule = {};
+                        templateModule.moduleId = module.moduleId;
+                        templateModule.moduleName = module.moduleName;
+                        templateModule.moduleDescribe = module.moduleDescribe;
+                        templateModule.sort = module.sort;
+                        templateModule.rows = rows;
+                        this.templateModules.push(templateModule);
+                    }
+                    //加载自定义组件
+                    this.reqAjaxAsync('printerTicket/getPreviewComponents', JSON.stringify(params)).done(res => {
+                        console.log(res)
+                        var previewModules = res.data;
+                        this.rerenderComponentEnableStatus(previewModules);
+                        this.rerenderComponentValueStyle(previewModules);
+                    })
+                }
+            });
+          },
+          mounted() {
+              
+          },
+          methods: {
+              //数据请求
+              reqAjaxAsync(cmd, data, async) {
+                var defer = $.Deferred();
+                $.ajax({
+                    type: "POST",
+                    url: "/zxcity_restful/ws/rest",
+                    dataType: "json",
+                    async: async || true, //默认为异步
+                    data: {
+                        "cmd": cmd,
+                        "data": data || ""
+                    },
+                    beforeSend: function(request) {
+                        layer.load(1, {
+                            shade: [0.1, '#fff']
+                        });
+                    },
+                    success: function(data) {
+                        layer.closeAll('loading');
+                        defer.resolve(data);
+                    },
+                    error: function(err) {
+                        layer.closeAll('loading');
+                        layer.msg("系统繁忙，请稍后再试!");
+                        console.log(err.status + ":" + err.statusText);
+                    }
+                });
+                return defer.promise();
+             } ,
+              GetQueryString(name) {
+                 var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+                 var r = window.location.search.substr(1).match(reg);
+                 if (r != null) return unescape(r[2]);
+                 return null;
+              },
+              //实现左侧高亮切换及右侧组件联动
+              switchComponentStatus(parentId, showStatus){
+                // console.log(parentId);
+                this.componentEnableStaus[parentId] = !showStatus;
+                this.componentEnableStaus = Object.assign({}, this.componentEnableStaus);
+                if(this.activeComponent.id){
+                    //清除上个焦点组件样式
+                    var valueStyle = JSON.parse(this.activeComponent.valueStyle);
+                    if (valueStyle.hasOwnProperty("border") && valueStyle.hasOwnProperty("backgroundColor")) {
+                        delete valueStyle.border;
+                        delete valueStyle.backgroundColor;
+                        this.activeComponent.valueStyle = JSON.stringify(valueStyle);
+                    }
+                }
+
+                var templateModules = this.templateModules;
+                for (var i = 0; i < templateModules.length; i++) {
+                    var templateModule = templateModules[i];
+                    for (var j = 0; j < templateModule.rows.length; j++) {
+                        var templateRows = templateModule.rows[j].components;
+                        for (var n = 0; n < templateRows.length; n++) {
+                            var templateComponent = templateRows[n];
+                            //改变右侧组件宽度
+                            
+                            if (!templateComponent.hasOwnProperty("component") && templateRows.length == 2) {
+                                if(templateComponent.id == parentId) {
+                                    var num = 0;
+                                    for (var m = 0; m < templateRows.length; m++) {
+                                        if(this.componentEnableStaus[templateRows[m].id]){
+                                            num++;  
+                                        }
+                                    }
+                                    if(j == 0) {
+                                        // console.log(num)
+                                        if(num == 1){
+                                            
+                                            templateRows[0].width = 100;
+                                            templateRows[1].width = 100;
+                                        } else if(num == 2){
+                                            templateRows[0].width = 70;
+                                            templateRows[1].width = 30;
+                                        } 
+                                    } else if (j == 1) {
+                                        if(num == 1){
+                                            templateRows[0].width = 100;
+                                            templateRows[1].width = 100;
+                                        } else if(num == 2){
+                                            templateRows[0].width = 80;
+                                            templateRows[1].width = 20;
+                                        } 
+                                    }
+                                }                             
+                            }
+                            //改变右侧组件分割线
+                            if(templateComponent.hasOwnProperty("component")) {
+                                if(templateComponent.component.id == parentId) {
+                                    templateModule.rows[j].showLine = false;
+                                    templateModule.rows[j].blankNumber = 0;
+                                }
+                            } else {
+                                if(templateComponent.id == parentId) {
+                                    templateModule.rows[j].showLine = false;
+                                    templateModule.rows[j].blankNumber = 0;
+                                }
+                            }
+                        }
+                    }  
+                }
+              
+              },
+              //更新自定义状态
+              rerenderComponentEnableStatus(previewModules){
+                var componentEnableStaus = this.componentEnableStaus;
+                for (var i = 0; i < previewModules.length; i++) {
+                    var previewModule = previewModules[i];
+                    if(!previewModule.rows) {
+                        previewModule.rows = []
+                    }
+                    for (var j = 0; j < previewModule.rows.length; j++) {
+                        var row = previewModule.rows[j];
+                        for (var n = 0; n < row.components.length; n++) {
+                            var component = row.components[n];
+                            if (component.component) {
+                                /*注意：使用系统组件id*/
+                                componentEnableStaus[component.component.systemComponentId] = true;
+                            } else {
+                                componentEnableStaus[component.systemComponentId] = true;
+                            }
+                        }
+                    }
+                }
+              },
+              //筛选自定义组件id,用于改变样式
+              rerenderComponentValueStyle(previewModules){
+                for (var i = 0; i < previewModules.length; i++) {
+                    var previewModule = previewModules[i].rows;
+                    if(!previewModule) {
+                        previewModule = []
+                    }
+                    for (var j = 0; j < previewModule.length; j++) {
+                        var rows = previewModule[j].components;                        
+                        for (var n = 0; n < rows.length; n++) {
+                            var component = rows[n];
+                            if (component.hasOwnProperty("component")) {
+                                if (component.category) {
+                                    /*注意：使用系统组件id*/
+                                    this.updateComponentValueStyle(component.category.moduleId, component.category.systemComponentId, component.category.valueStyle, previewModule[j].blankNumber, previewModule[j].showLine);
+                                }
+                                if (component.tableTitle) {
+                                    this.updateComponentValueStyle(component.tableTitle.moduleId, component.tableTitle.systemComponentId, component.tableTitle.valueStyle, previewModule[j].blankNumber, previewModule[j].showLine);
+                                }
+                                if (component.thead) {
+                                    var theadRowColumns = component.thead.tableRowSet.columnSet;
+                                    for (var m = 0; m < theadRowColumns.length; m++) {
+                                        this.updateComponentValueStyle(theadRowColumns[m].moduleId, theadRowColumns[m].systemComponentId, theadRowColumns[m].valueStyle, previewModule[j].blankNumber, previewModule[j].showLine);
+                                    }
+                                }
+                                if (component.tbody) {
+                                    var tbodyRows = component.tbody.tableRowSet;
+                                    for (var k = 0; k < tbodyRows.length; k++) {
+                                        var tbodyRowColumns = tbodyRows[k].columnSet;
+                                        for (var h = 0; h < tbodyRowColumns.length; h++) {
+                                            this.updateComponentValueStyle(tbodyRowColumns[h].moduleId, tbodyRowColumns[h].systemComponentId, tbodyRowColumns[h].valueStyle, previewModule[j].blankNumber, previewModule[j].showLine);
+                                        }
+                                    }
+                                }
+                            } else {
+                                this.updateComponentValueStyle(component.moduleId, component.systemComponentId, component.valueStyle,  previewModule[j].blankNumber, previewModule[j].showLine);
+                            }
+                        }
+                    }
+                }
+              },
+              //更新自定义组件样式
+              updateComponentValueStyle(moduleId, systemComponentId, valueStyle, blankNumber, showLine) {
+                var templateModules = this.templateModules;
+                for (var i = 0; i < templateModules.length; i++) {
+                    var templateModule = templateModules[i];
+                    if (templateModule.moduleId === moduleId) {
+                        for (var j = 0; j < templateModule.rows.length; j++) {
+                            var templateRows = templateModule.rows[j].components;
+                            for (var n = 0; n < templateRows.length; n++) {
+                                var templateComponent = templateRows[n];
+                                if (templateComponent.hasOwnProperty("component")) {
+                                    if (templateComponent.category) {
+                                        if (templateComponent.category.id === systemComponentId) {
+                                            templateComponent.category.valueStyle = valueStyle;
+                                            this.$set(templateModule.rows[j], 'blankNumber', blankNumber);
+                                            this.$set(templateModule.rows[j], 'showLine', showLine);
+                                            break;
+                                        }
+                                    }
+                                    if (templateComponent.tableTitle) {
+                                        if (templateComponent.tableTitle.id === systemComponentId) {
+                                            templateComponent.tableTitle.valueStyle = valueStyle;
+                                            this.$set(templateModule.rows[j], 'blankNumber', blankNumber);
+                                            this.$set(templateModule.rows[j], 'showLine', showLine);
+                                            break;
+                                        }
+                                    }
+                                    if (templateComponent.thead) {
+                                        var theadRowColumns = templateComponent.thead.tableRowSet.columnSet;
+                                        for (var m = 0; m < theadRowColumns.length; m++) {
+                                            if (theadRowColumns[m].id === systemComponentId) {
+                                                theadRowColumns[m].valueStyle = valueStyle;
+                                                this.$set(templateModule.rows[j], 'blankNumber', blankNumber);
+                                                this.$set(templateModule.rows[j], 'showLine', showLine);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (templateComponent.tbody) {
+                                        var tbodyRows = templateComponent.tbody.tableRowSet;
+                                        for (var k = 0; k < tbodyRows.length; k++) {
+                                            var tbodyRowColumns = tbodyRows[k].columnSet;
+                                            for (var h = 0; h < tbodyRowColumns.length; h++) {
+                                                if (tbodyRowColumns[h].id === systemComponentId) {
+                                                    tbodyRowColumns[h].valueStyle = valueStyle;
+                                                    this.$set(templateModule.rows[j], 'blankNumber', blankNumber);
+                                                    this.$set(templateModule.rows[j], 'showLine', showLine);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    if (templateComponent.id === systemComponentId) {
+                                        templateComponent.valueStyle = valueStyle;
+                                        this.$set(templateModule.rows[j], 'blankNumber', blankNumber);
+                                        this.$set(templateModule.rows[j], 'showLine', showLine);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+              },
+              //右侧高亮切换
+              doTemplateComponentActive(templateComponent) {
+                var valueStyle = {};
+                if(this.activeComponent.id){
+                    //清除上个焦点组件样式
+                    valueStyle = JSON.parse(this.activeComponent.valueStyle);
+                    if (valueStyle.hasOwnProperty("border") && valueStyle.hasOwnProperty("backgroundColor")) {
+                        delete valueStyle.border;
+                        delete valueStyle.backgroundColor;
+                        this.activeComponent.valueStyle = JSON.stringify(valueStyle);
+                    }
+                }
+                if (!templateComponent.valueStyle) {
+                    templateComponent.valueStyle = '{}';
+                }
+                valueStyle = JSON.parse(templateComponent.valueStyle);
+                if (!valueStyle.hasOwnProperty("border")) {
+                    valueStyle.border = "1px solid orange";
+                    valueStyle.backgroundColor = "rgba(247, 248, 74, 0.67)";
+                }
+                templateComponent.valueStyle = JSON.stringify(valueStyle);
+                //保存焦点组件信息
+                this.activeComponent = templateComponent;
+                //保存焦点组件样式
+                this.activeTemplateValueStyle = valueStyle;
+              },
+              //修改焦点组件样式
+              updateTemplateProperty(){
+                var valueStyle = this.activeTemplateValueStyle;
+                this.activeComponent.valueStyle = JSON.stringify(valueStyle);
+                if(this.activeComponent.id == 125) {
+                    if($('#text').val() == 'left') {
+                        $('.node').css('marginLeft', 0);
+                    } else if($('#text').val() == 'center') {
+                        $('.node').css('margin', '0 auto');
+                    } else if($('#text').val() == 'right') {
+                        $('.node').css('marginRight', 0);
+                    }
+                }
+              },
+              //生成自定义模板并保存
+              buildCustomTemplate(){
+                if(!this.moduleName){
+                    layer.msg("模板名称不能为空");
+                    return;
+                }
+                var params = {
+                        templateId: 0,
+                        name: this.moduleName
+                    }
+                if(this.type == 'edit'){
+                    params.templateId = this.templateId;
+                }
+                this.reqAjaxAsync('printerTicket/checkName', JSON.stringify(params)).done(res => {
+                    console.log(res)
+                    if(res.code == 1){
+                        var valueStyle = JSON.parse(this.activeComponent.valueStyle);
+                        console.log(valueStyle) 
+                        if (valueStyle.hasOwnProperty("border") && valueStyle.hasOwnProperty("backgroundColor")) {
+                            console.log(valueStyle.border)
+                            delete valueStyle.border;
+                            delete valueStyle.backgroundColor;
+                            this.activeComponent.valueStyle = JSON.stringify(valueStyle);
+                        }
+                        //深拷贝templateModules
+                        var templateModules = JSON.parse(JSON.stringify(this.templateModules)); 
+                        var componentEnableStaus = this.componentEnableStaus
+                        for (var i = 0; i < templateModules.length; i++) {
+                            var rows = templateModules[i].rows;
+                            for (var j = rows.length - 1; j > -1; j--) {
+                                var templateRow = rows[j].components;
+                                for (var k = templateRow.length - 1; k > -1; k--) {
+                                    var templateComponent = templateRow[k];
+                                    if (templateComponent.hasOwnProperty("component")) {
+
+                                        if (!componentEnableStaus[templateComponent.component.id]) {
+                                            templateRow.splice(k, 1);
+                                        }
+                                    } else {
+                                        if (!componentEnableStaus[templateComponent.id]) {
+                                            templateRow.splice(k, 1);
+                                        }
+                                    }
+                                }
+                                if (templateRow.length < 1) {
+                                    rows.splice(j, 1);
+                                }
+                            }
+                        }
+                        console.log(templateModules);
+                        if(this.type == 'add') {
+                            var params = {
+                                "shopId": 288,                  
+                                "operatorId": 17,              
+                                "name": this.moduleName,                 
+                                "documentType": this.documentType,             
+                                "url": "http://img.png",       
+                                "modules": templateModules                  
+                            }
+                            this.reqAjaxAsync('printerTicket/save', JSON.stringify(params)).done(res => {
+                                console.log(res);
+                                layer.msg(res.msg);
+                                if(res.code == 1) { 
+                                }
+                            })
+                        } else if(this.type == 'edit') {
+                            var params = {
+                                "shopId": 288,                               
+                                "name": this.moduleName,                 
+                                "templateId": this.templateId,             
+                                "url": "http://img.png",       
+                                "modules": templateModules                  
+                            }
+                            this.reqAjaxAsync('printerTicket/update', JSON.stringify(params)).done(res => {
+                                console.log(res)
+                                layer.msg(res.msg);
+                            })
+                        }
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                })
+               
+              },
+              //分割线
+              updateRule(index){
+                  var activeComponent = this.activeComponent;
+                  var templateModules = this.templateModules;
+                  for (var i = 0; i < templateModules.length; i++) {
+                    var templateModule = templateModules[i];
+                    for (var j = 0; j < templateModule.rows.length; j++) {
+                        var templateRows = templateModule.rows[j].components;
+                        for (var n = 0; n < templateRows.length; n++) {
+                            var templateComponent = templateRows[n];
+                            //改变右侧组件分割线
+                            if(templateComponent.hasOwnProperty("component")) {
+                                if (templateComponent.category) {
+                                    if (templateComponent.category.id === activeComponent.id) {
+                                        if(index == 3){
+                                            templateModule.rows[j].showLine = !templateModule.rows[j].showLine;
+                                            break;
+                                        } else if(index == 2){
+                                            templateModule.rows[j].blankNumber--;
+                                            if(templateModule.rows[j].blankNumber < 0){
+                                                templateModule.rows[j].blankNumber = 0;
+                                            }
+                                        } else if(index == 1){ 
+                                            templateModule.rows[j].blankNumber++;                                           
+                                        }
+                                    }
+                                }
+                                if (templateComponent.tableTitle) {
+                                    if (templateComponent.tableTitle.id === activeComponent.id) {
+                                        if(index == 3){
+                                            templateModule.rows[j].showLine = !templateModule.rows[j].showLine;
+                                            break;
+                                        } else if(index == 2){
+                                            templateModule.rows[j].blankNumber--;
+                                            if(templateModule.rows[j].blankNumber < 0){
+                                                templateModule.rows[j].blankNumber = 0;
+                                            }
+                                        } else if(index == 1){  
+                                            templateModule.rows[j].blankNumber++;                                         
+                                        }    
+                                    }
+                                }
+                                if (templateComponent.thead) {
+                                    var theadRowColumns = templateComponent.thead.tableRowSet.columnSet;
+                                    for (var m = 0; m < theadRowColumns.length; m++) {
+                                        if (theadRowColumns[m].id === activeComponent.id) {
+                                            if(index == 3){
+                                                templateModule.rows[j].showLine = !templateModule.rows[j].showLine;
+                                                break;
+                                            } else if(index == 2){
+                                                templateModule.rows[j].blankNumber--;
+                                                if(templateModule.rows[j].blankNumber < 0){
+                                                    templateModule.rows[j].blankNumber = 0;
+                                                }
+                                            } else if(index == 1){  
+                                                templateModule.rows[j].blankNumber++;                                          
+                                            }
+                                        }
+                                    }
+                                }
+                                if (templateComponent.tbody) {
+                                    var tbodyRows = templateComponent.tbody.tableRowSet;
+                                    for (var k = 0; k < tbodyRows.length; k++) {
+                                        var tbodyRowColumns = tbodyRows[k].columnSet;
+                                        for (var h = 0; h < tbodyRowColumns.length; h++) {
+                                            if (tbodyRowColumns[h].id === activeComponent.id) {
+                                                if(index == 3){
+                                                    templateModule.rows[j].showLine = !templateModule.rows[j].showLine;
+                                                    break;
+                                                } else if(index == 2){
+                                                    templateModule.rows[j].blankNumber--;
+                                                    if(templateModule.rows[j].blankNumber < 0){
+                                                        templateModule.rows[j].blankNumber = 0;
+                                                    }
+                                                } else if(index == 1){  
+                                                    templateModule.rows[j].blankNumber++;                                         
+                                                }   
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                if(templateComponent.id == activeComponent.id) {
+                                    if(index == 3){
+                                        templateModule.rows[j].showLine = !templateModule.rows[j].showLine;   
+                                    } else if(index == 2){
+                                        templateModule.rows[j].blankNumber--;
+                                        if(templateModule.rows[j].blankNumber < 0){
+                                            templateModule.rows[j].blankNumber = 0;
+                                        }
+                                    } else if(index == 1){
+                                        console.log(templateModule.rows[j])
+                                        templateModule.rows[j].blankNumber++;
+                                    }
+                                }
+                            }
+                        }
+                    }  
+                }
+                
+              } 
+          },
+          filters: {
+            filterStyle(val){
+                var valueStyleStr = "";
+                if (val.valueStyle != null && val.valueStyle != "") {
+                    var valueStyle = JSON.parse(val.valueStyle);
+                    for(key in valueStyle){
+                        if (key === "fontSize") {
+                            if (valueStyle[key] == 1) {
+                                valueStyle[key] = 12;
+                            } else if(valueStyle[key] == 2){
+                                valueStyle[key] = 16;
+                            } else {
+                                valueStyle[key] = 20;
+                            }
+                            valueStyle[key] = valueStyle[key] + "px";
+                        }
+                        valueStyleStr += key + ":" + valueStyle[key] + ";";
+                    }
+                }
+                if (val.width != null && val.width != "") {
+                    valueStyleStr += "width:" + val.width + "%;";
+                }
+                return valueStyleStr;
+            }
+        }
+      })
+  </script>
+</html>
